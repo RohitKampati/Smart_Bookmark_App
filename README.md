@@ -1,52 +1,48 @@
-📌 Smart Bookmark App
+# 📌 Smart Bookmark App
 
-A full-stack real-time bookmark management application built using Next.js (App Router) and Supabase.
-
+A full-stack real-time bookmark management application built using **Next.js (App Router)** and **Supabase**.  
 The app allows authenticated users to securely manage personal bookmarks with instant cross-tab synchronization.
 
-🚀 Live Demo
+---
 
-👉 View Live App
-
-(Replace with your actual Vercel URL)
-
-🧩 Project Overview
+## 🧩 Project Overview
 
 Smart Bookmark App enables users to:
 
-🔐 Authenticate using Google OAuth
+- Authenticate using Google OAuth
+- Create and delete personal bookmarks
+- Access private data secured with Row Level Security (RLS)
+- Experience real-time updates across multiple browser sessions
+- Use a responsive UI built with Tailwind CSS
 
-➕ Create personal bookmarks
+This project demonstrates modern full-stack development practices using serverless architecture.
 
-❌ Delete bookmarks
+---
 
-🔒 Access private data secured with Row Level Security (RLS)
+## 🏗️ Architecture
 
-⚡ Experience real-time updates across multiple browser sessions
+Frontend: Next.js (App Router)  
+Backend: Supabase (PostgreSQL + Auth + Realtime)  
+Authentication: Google OAuth via Supabase  
+Database Security: Row Level Security Policies  
+Deployment: Vercel  
 
-📱 Use a responsive UI built with Tailwind CSS
+---
 
-This project demonstrates modern full-stack development using a serverless architecture.
+## 🔐 Authentication Flow
 
-🏗️ Architecture
-Layer	Technology
-Frontend	Next.js (App Router)
-Backend	Supabase (PostgreSQL + Auth + Realtime)
-Authentication	Google OAuth via Supabase
-Database Security	Row Level Security (RLS)
-Deployment	Vercel
-🔐 Authentication Flow
+1. User signs in with Google OAuth.
+2. Supabase handles authentication and session management.
+3. User ID from Supabase auth is linked to bookmark records.
+4. Row Level Security ensures users can only access their own records.
 
-User signs in with Google OAuth
+---
 
-Supabase handles authentication and session management
+## 🗄️ Database Design
 
-User ID from Supabase Auth is linked to bookmark records
+### Table: `bookmarks`
 
-Row Level Security ensures users can only access their own records
-
-🗄️ Database Design
-Table: bookmarks
+```sql
 create table bookmarks (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references auth.users(id) on delete cascade,
@@ -54,8 +50,11 @@ create table bookmarks (
   url text not null,
   created_at timestamp default now()
 );
+```
 
-🔒 Row Level Security
+### Row Level Security
+
+```sql
 alter table bookmarks enable row level security;
 
 create policy "Users can access their own bookmarks"
@@ -63,76 +62,91 @@ on bookmarks
 for all
 using (auth.uid() = user_id)
 with check (auth.uid() = user_id);
+```
 
-⚡ Real-Time Implementation
+---
 
-Supabase Realtime subscriptions listen for:
+## ⚡ Real-Time Implementation
 
-INSERT
+Supabase Realtime subscriptions listen for database changes:
 
-DELETE
+- INSERT
+- DELETE
+- UPDATE
 
-UPDATE
+Whenever a change occurs, the UI automatically refreshes the bookmark list, enabling real-time synchronization across tabs.
 
-Whenever a change occurs, the UI automatically refreshes the bookmark list — enabling real-time synchronization across multiple browser tabs.
+---
 
-📦 Local Setup
-1️⃣ Clone the repository
+## 🚀 Deployment
+
+The application is deployed on Vercel.
+
+### Environment Variables Required
+
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+```
+
+Live URL:  
+👉 Add your Vercel deployment link here
+
+---
+
+## 📦 Local Setup
+
+Clone the repository:
+
+```bash
 git clone https://github.com/YOUR_USERNAME/smart-bookmark-app.git
+```
 
-2️⃣ Navigate into the project
+Navigate to the project:
+
+```bash
 cd smart-bookmark-app
+```
 
-3️⃣ Install dependencies
+Install dependencies:
+
+```bash
 npm install
+```
 
-4️⃣ Start development server
+Start development server:
+
+```bash
 npm run dev
-
+```
 
 Visit:
 
+```
 http://localhost:3000
+```
 
-🔐 Environment Variables
+---
 
-Create a .env.local file and add:
+## 🛠️ Key Technical Highlights
 
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+- Implemented secure multi-user architecture using RLS
+- Integrated third-party OAuth authentication
+- Built full CRUD functionality with Supabase
+- Implemented real-time data subscriptions
+- Deployed full-stack app using serverless infrastructure
 
-🛠️ Key Technical Highlights
+---
 
-✅ Implemented secure multi-user architecture using RLS
+## 🧠 Challenges & Solutions
 
-✅ Integrated third-party OAuth authentication
+| Challenge | Solution |
+|-----------|----------|
+| OAuth redirect errors | Configured correct callback URL in Google Cloud |
+| Insert blocked by RLS | Added `with check (auth.uid() = user_id)` |
+| Realtime not triggering | Enabled replication for bookmarks table |
+| Session not persisting | Used `onAuthStateChange` listener |
 
-✅ Built full CRUD functionality with Supabase
+---
 
-✅ Implemented real-time data subscriptions
 
-✅ Deployed full-stack app using serverless infrastructure
-
-✅ Structured using modern Next.js App Router
-
-🧠 Challenges & Solutions
-Challenge	Solution
-OAuth redirect errors	Configured correct callback URL in Google Cloud
-Insert blocked by RLS	Added with check (auth.uid() = user_id)
-Realtime not triggering	Enabled replication for bookmarks table
-Session not persisting	Used onAuthStateChange listener
-📌 Future Improvements
-
-✏️ Edit bookmark functionality
-
-🔍 Search & filter bookmarks
-
-🏷️ Add tags/categories
-
-🌙 Dark mode support
-
-👨‍💻 Author
-
-Raghu Naga Rohit Kampati
-Aspiring Software Engineer
-GitHub
