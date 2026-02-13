@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+📌 Smart Bookmark App
+A full-stack real-time bookmark management application built using Next.js (App Router) and Supabase.
+The app allows authenticated users to securely manage personal bookmarks with instant cross-tab synchronization.
 
-## Getting Started
+🧩 Project Overview
+Smart Bookmark App enables users to:
 
-First, run the development server:
+Authenticate using Google OAuth
+Create and delete personal bookmarks
+Access private data secured with Row Level Security (RLS)
+Experience real-time updates across multiple browser sessions
+Use a responsive UI built with Tailwind CSS
+This project demonstrates modern full-stack development practices using serverless architecture.
 
-```bash
+🏗️ Architecture
+Frontend: Next.js (App Router)
+Backend: Supabase (PostgreSQL + Auth + Realtime)
+Authentication: Google OAuth via Supabase
+Database Security: Row Level Security Policies
+Deployment: Vercel
+
+🔐 Authentication Flow
+User signs in with Google OAuth.
+Supabase handles authentication and session management.
+User ID from Supabase auth is linked to bookmark records.
+Row Level Security ensures users can only access their own records.
+🗄️ Database Design
+Table: bookmarks
+create table bookmarks (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references auth.users(id) on delete cascade,
+  title text not null,
+  url text not null,
+  created_at timestamp default now()
+);
+Row Level Security
+alter table bookmarks enable row level security;
+
+create policy "Users can access their own bookmarks"
+on bookmarks
+for all
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);
+⚡ Real-Time Implementation
+Supabase Realtime subscriptions listen for database changes:
+
+INSERT
+DELETE
+UPDATE
+Whenever a change occurs, the UI automatically refreshes the bookmark list, enabling real-time synchronization across tabs.
+
+🚀 Deployment
+The application is deployed on Vercel.
+
+Environment Variables Required
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+Live URL:
+👉 Add your Vercel deployment link here
+
+📦 Local Setup
+Clone the repository:
+
+git clone https://github.com/YOUR_USERNAME/smart-bookmark-app.git
+Navigate to the project:
+
+cd smart-bookmark-app
+Install dependencies:
+
+npm install
+Start development server:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Visit:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+http://localhost:3000
+🛠️ Key Technical Highlights
+Implemented secure multi-user architecture using RLS
+Integrated third-party OAuth authentication
+Built full CRUD functionality with Supabase
+Implemented real-time data subscriptions
+Deployed full-stack app using serverless infrastructure
+🧠 Challenges & Solutions
+Challenge	Solution
+OAuth redirect errors	Configured correct callback URL in Google Cloud
+Insert blocked by RLS	Added with check (auth.uid() = user_id)
+Realtime not triggering	Enabled replication for bookmarks table
+Session not persisting	Used onAuthStateChange listener
